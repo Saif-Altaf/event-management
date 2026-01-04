@@ -69,12 +69,19 @@ if (isset($_GET['logout'])) {
 }
 
 // Fetch Public Events (include approved registrations count)
-$events = $conn->query(
-    "SELECT e.*, (
+// Support optional search via GET param `q` (searches title, description, location)
+$search = '';
+$where = "e.status = 'open'";
+if (isset($_GET['q']) && strlen(trim($_GET['q'])) > 0) {
+    $search = trim($_GET['q']);
+    $esc = $conn->real_escape_string($search);
+    $where .= " AND (e.title LIKE '%" . $esc . "%' OR e.description LIKE '%" . $esc . "%' OR e.location LIKE '%" . $esc . "%')";
+}
+$sql = "SELECT e.*, (
          SELECT COUNT(*) FROM registrations r WHERE r.event_id = e.id AND r.status = 'approved'
       ) as approved_count
-      FROM events e WHERE e.status = 'open' ORDER BY e.start_date ASC"
-);
+      FROM events e WHERE " . $where . " ORDER BY e.start_date ASC";
+$events = $conn->query($sql);
 ?>
 
 <!DOCTYPE html>
@@ -148,6 +155,15 @@ $events = $conn->query(
     <!-- Events Section -->
     <main class="container my-5" id="events">
         <h2 class="text-center mb-4">Upcoming Events</h2>
+        <div class="row justify-content-center mb-3">
+            <div class="col-md-8">
+                <form method="GET" action="index.php" class="d-flex">
+                    <input type="search" name="q" class="form-control" placeholder="Search events by title, description or location"
+                        value="<?php echo htmlspecialchars($search ?? '', ENT_QUOTES); ?>">
+                    <button type="submit" class="btn btn-primary ms-2">Search</button>
+                </form>
+            </div>
+        </div>
         <div class="row">
             <?php if ($events->num_rows > 0): ?>
                 <?php while ($row = $events->fetch_assoc()): ?>
