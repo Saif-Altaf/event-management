@@ -68,8 +68,13 @@ if (isset($_GET['logout'])) {
     exit();
 }
 
-// Fetch Public Events
-$events = $conn->query("SELECT * FROM events WHERE status = 'open' ORDER BY start_date ASC");
+// Fetch Public Events (include approved registrations count)
+$events = $conn->query(
+    "SELECT e.*, (
+         SELECT COUNT(*) FROM registrations r WHERE r.event_id = e.id AND r.status = 'approved'
+      ) as approved_count
+      FROM events e WHERE e.status = 'open' ORDER BY e.start_date ASC"
+);
 ?>
 
 <!DOCTYPE html>
@@ -158,14 +163,23 @@ $events = $conn->query("SELECT * FROM events WHERE status = 'open' ORDER BY star
                                 <span class="badge bg-success"><?php echo ucfirst($row['status']); ?></span>
                             </div>
                             <div class="card-footer bg-white border-top-0">
-                                <?php if (isset($_SESSION['user_id'])): ?>
-                                    <a href="dashboard.php?register_event=<?php echo $row['id']; ?>"
-                                        class="btn btn-outline-primary btn-sm w-100"
-                                        onclick="return confirm('Register for this event?');">View Details & Register</a>
-                                <?php else: ?>
-                                    <a href="#login-modal" data-bs-toggle="modal" class="btn btn-outline-dark btn-sm w-100">Login to
-                                        Register</a>
-                                <?php endif; ?>
+                                <div class="d-flex align-items-center">
+                                    <?php if (isset($_SESSION['user_id'])): ?>
+                                        <a href="dashboard.php?register_event=<?php echo $row['id']; ?>"
+                                            class="btn btn-outline-primary btn-sm flex-grow-1 me-2"
+                                            onclick="return confirm('Register for this event?');">View Details &amp; Register</a>
+                                    <?php else: ?>
+                                        <a href="#login-modal" data-bs-toggle="modal" class="btn btn-outline-dark btn-sm flex-grow-1 me-2">Login to
+                                            Register</a>
+                                    <?php endif; ?>
+                                    <div class="text-muted small d-flex align-items-center" title="<?php echo $row['approved_count']; ?> registered">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" style="margin-right:6px;">
+                                            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3z"/>
+                                            <path fill-rule="evenodd" d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                                        </svg>
+                                        <span><?php echo (int)$row['approved_count']; ?></span>
+                                    </div>
+                                </div>
                             </div>
                         </article>
                     </div>
