@@ -68,8 +68,20 @@ if (isset($_GET['logout'])) {
     exit();
 }
 
-// Fetch Public Events
-$events = $conn->query("SELECT * FROM events WHERE status = 'open' ORDER BY start_date ASC");
+// Fetch Public Events (include approved registrations count)
+// Support optional search via GET param `q` (searches title, description, location)
+$search = '';
+$where = "e.status = 'open'";
+if (isset($_GET['q']) && strlen(trim($_GET['q'])) > 0) {
+    $search = trim($_GET['q']);
+    $esc = $conn->real_escape_string($search);
+    $where .= " AND (e.title LIKE '%" . $esc . "%' OR e.description LIKE '%" . $esc . "%' OR e.location LIKE '%" . $esc . "%')";
+}
+$sql = "SELECT e.*, (
+         SELECT COUNT(*) FROM registrations r WHERE r.event_id = e.id AND r.status = 'approved'
+      ) as approved_count
+      FROM events e WHERE " . $where . " ORDER BY e.start_date ASC";
+$events = $conn->query($sql);
 ?>
 
 <!DOCTYPE html>
@@ -105,7 +117,8 @@ $events = $conn->query("SELECT * FROM events WHERE status = 'open' ORDER BY star
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand logo-container" href="index.php">
-                <span class="logo-e">e</span><span class="logo-manager">Manager</span>
+                <span class="logo-manager">Manage</span>
+                <span class="logo-e">IT</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -143,6 +156,15 @@ $events = $conn->query("SELECT * FROM events WHERE status = 'open' ORDER BY star
     <!-- Events Section -->
     <main class="container my-5" id="events">
         <h2 class="text-center mb-4">Upcoming Events</h2>
+        <div class="row justify-content-center mb-3">
+            <div class="col-md-8">
+                <form method="GET" action="index.php" class="d-flex">
+                    <input type="search" name="q" class="form-control" placeholder="Search events by title, description or location"
+                        value="<?php echo htmlspecialchars($search ?? '', ENT_QUOTES); ?>">
+                    <button type="submit" class="btn btn-primary ms-2">Search</button>
+                </form>
+            </div>
+        </div>
         <div class="row">
             <?php if ($events->num_rows > 0): ?>
                 <?php while ($row = $events->fetch_assoc()): ?>
@@ -158,14 +180,23 @@ $events = $conn->query("SELECT * FROM events WHERE status = 'open' ORDER BY star
                                 <span class="badge bg-success"><?php echo ucfirst($row['status']); ?></span>
                             </div>
                             <div class="card-footer bg-white border-top-0">
-                                <?php if (isset($_SESSION['user_id'])): ?>
-                                    <a href="dashboard.php?register_event=<?php echo $row['id']; ?>"
-                                        class="btn btn-outline-primary btn-sm w-100"
-                                        onclick="return confirm('Register for this event?');">View Details & Register</a>
-                                <?php else: ?>
-                                    <a href="#login-modal" data-bs-toggle="modal" class="btn btn-outline-dark btn-sm w-100">Login to
-                                        Register</a>
-                                <?php endif; ?>
+                                <div class="d-flex align-items-center">
+                                    <?php if (isset($_SESSION['user_id'])): ?>
+                                        <a href="dashboard.php?register_event=<?php echo $row['id']; ?>"
+                                            class="btn btn-outline-primary btn-sm flex-grow-1 me-2"
+                                            onclick="return confirm('Register for this event?');">View Details &amp; Register</a>
+                                    <?php else: ?>
+                                        <a href="#login-modal" data-bs-toggle="modal" class="btn btn-outline-dark btn-sm flex-grow-1 me-2">Login to
+                                            Register</a>
+                                    <?php endif; ?>
+                                    <div class="text-muted small d-flex align-items-center" title="<?php echo $row['approved_count']; ?> registered">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" style="margin-right:6px;">
+                                            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3z"/>
+                                            <path fill-rule="evenodd" d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                                        </svg>
+                                        <span><?php echo (int)$row['approved_count']; ?></span>
+                                    </div>
+                                </div>
                             </div>
                         </article>
                     </div>

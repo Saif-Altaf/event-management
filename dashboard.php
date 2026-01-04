@@ -74,7 +74,7 @@ if (in_array($role, ['coordinator', 'executive', 'senior_executive'])) {
 
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard - Evenoz</title>
+    <title>Dashboard - ManageIT</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
 </head>
@@ -83,7 +83,10 @@ if (in_array($role, ['coordinator', 'executive', 'senior_executive'])) {
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="index.php">Evenoz</a>
+            <a class="navbar-brand logo-container" href="index.php">
+                <span class="logo-manager">Manage</span>
+                <span class="logo-e">IT</span>
+            </a>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><span class="nav-link text-light">Welcome, <?php echo $username; ?>
