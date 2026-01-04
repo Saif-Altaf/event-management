@@ -1,7 +1,6 @@
 body {
   font-family: "Inter", system-ui, -apple-system, sans-serif;
 }
-
 /* Custom eManager Logo */
 .logo-container {
   font-size: 1.5rem; /* Adjust size as needed */
@@ -40,10 +39,10 @@ body {
   color: #4b5563; /* Sleek slate grey */
   line-height: 1.6;
 }
-
 .navbar-brand {
   font-weight: 700;
   letter-spacing: -0.5px;
+  color: #c3c6e4;
 }
 
 .card {
