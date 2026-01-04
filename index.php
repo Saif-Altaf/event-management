@@ -117,7 +117,8 @@ $events = $conn->query($sql);
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand logo-container" href="index.php">
-                <span class="logo-e">e</span><span class="logo-manager">Manager</span>
+                <span class="logo-manager">Manage</span>
+                <span class="logo-e">IT</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
