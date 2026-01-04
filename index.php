@@ -104,7 +104,9 @@ $events = $conn->query("SELECT * FROM events WHERE status = 'open' ORDER BY star
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="index.php">BRACU Event Management</a>
+            <a class="navbar-brand logo-container" href="index.php">
+                <span class="logo-e">e</span><span class="logo-manager">Manager</span>
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
