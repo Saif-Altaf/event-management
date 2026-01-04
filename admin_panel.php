@@ -49,12 +49,20 @@ if (isset($_POST['assign_task'])) {
     $deadline = $_POST['deadline'];
     $conn->query("INSERT INTO tasks (event_id, assigned_to, description, deadline) VALUES ($event_id, $staff_id, '$desc', '$deadline')");
 }
-// Update Registration Status (Approve/Reject)
-if (isset($_GET['reg_action']) && isset($_GET['reg_id'])) {
-    $status = $_GET['reg_action']; // 'approved' or 'rejected'
-    $id = (int)$_GET['reg_id'];
-    
-    if ($conn->query("UPDATE registrations SET status = '$status' WHERE id = $id") === TRUE) {
+// Update Registration Status (Approve/Reject) - accept POST for actions
+if ((isset($_POST['reg_action']) && isset($_POST['reg_id'])) || (isset($_GET['reg_action']) && isset($_GET['reg_id']))) {
+    // Prefer POST for state changes
+    $status = isset($_POST['reg_action']) ? $_POST['reg_action'] : $_GET['reg_action']; // 'approved' or 'rejected'
+    $id = (int)(isset($_POST['reg_id']) ? $_POST['reg_id'] : $_GET['reg_id']);
+
+    // Basic validation
+    $allowed = ['approved', 'rejected'];
+    if (!in_array($status, $allowed)) {
+        die('Invalid action');
+    }
+
+    // Perform update
+    if ($conn->query("UPDATE registrations SET status = '" . $conn->real_escape_string($status) . "' WHERE id = $id") === TRUE) {
         header("Location: admin_panel.php");
         exit();
     } else {
@@ -146,10 +154,16 @@ $pending_registrations = $conn->query("
                                     <td><?php echo $req['username']; ?></td>
                                     <td><?php echo $req['title']; ?></td>
                                     <td>
-                                        <a href="admin_panel.php?reg_id=<?php echo $req['id']; ?>&reg_action=approved"
-                                            class="btn btn-sm btn-success">Approve</a>
-                                        <a href="admin_panel.php?reg_id=<?php echo $req['id']; ?>&reg_action=rejected"
-                                            class="btn btn-sm btn-danger">Reject</a>
+                                        <form method="POST" style="display:inline; margin-right:6px;">
+                                            <input type="hidden" name="reg_id" value="<?php echo $req['id']; ?>">
+                                            <input type="hidden" name="reg_action" value="approved">
+                                            <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                                        </form>
+                                        <form method="POST" style="display:inline;">
+                                            <input type="hidden" name="reg_id" value="<?php echo $req['id']; ?>">
+                                            <input type="hidden" name="reg_action" value="rejected">
+                                            <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                                        </form>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>
