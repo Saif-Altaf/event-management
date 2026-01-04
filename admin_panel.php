@@ -86,6 +86,14 @@ $pending_registrations = $conn->query("
     JOIN events e ON r.event_id = e.id 
     WHERE r.status = 'pending'
 ");
+// Fetch all assigned tasks for admin overview
+$all_tasks = $conn->query(
+     "SELECT t.id, t.description, t.deadline, t.status, e.title as event_title, u.username as assigned_user 
+      FROM tasks t 
+      JOIN events e ON t.event_id = e.id 
+      LEFT JOIN users u ON t.assigned_to = u.id 
+      ORDER BY (t.deadline IS NULL), t.deadline ASC"
+);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -176,6 +184,43 @@ $pending_registrations = $conn->query("
                 </div>
             </section>
         <?php endif; ?>
+
+            <!-- ASSIGNED TASKS (ADMIN OVERVIEW) -->
+            <section class="card shadow-sm mb-4" aria-labelledby="tasks-overview-heading">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0" id="tasks-overview-heading">All Assigned Tasks</h5>
+                </div>
+                <div class="card-body">
+                    <?php if ($all_tasks && $all_tasks->num_rows > 0): ?>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Task</th>
+                                        <th>Event</th>
+                                        <th>Assigned To</th>
+                                        <th>Deadline</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php while ($t = $all_tasks->fetch_assoc()): ?>
+                                        <tr>
+                                            <td><?php echo htmlspecialchars($t['description']); ?></td>
+                                            <td><?php echo htmlspecialchars($t['event_title']); ?></td>
+                                            <td><?php echo $t['assigned_user'] ? htmlspecialchars($t['assigned_user']) : '<em>Unassigned</em>'; ?></td>
+                                            <td><?php echo $t['deadline'] ? date('M d, Y', strtotime($t['deadline'])) : '-'; ?></td>
+                                            <td><?php echo ucfirst($t['status']); ?></td>
+                                        </tr>
+                                    <?php endwhile; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php else: ?>
+                        <p class="text-muted mb-0">No tasks assigned yet.</p>
+                    <?php endif; ?>
+                </div>
+            </section>
         <div class="row">
             <!-- EVENT MANAGEMENT -->
             <div class="col-lg-8">
