@@ -67,6 +67,14 @@ if (in_array($role, ['coordinator', 'executive', 'senior_executive'])) {
         WHERE t.assigned_to = $user_id
     ");
 }
+
+// Fetch all assigned tasks for admin overview
+$all_tasks = null;
+if ($role == 'admin') {
+    $all_tasks = $conn->query(
+        "SELECT t.id, t.description, t.deadline, t.status, e.title as event_title, u.username as assigned_user \n         FROM tasks t \n         JOIN events e ON t.event_id = e.id \n         LEFT JOIN users u ON t.assigned_to = u.id \n         ORDER BY (t.deadline IS NULL), t.deadline ASC"
+    );
+}
 ?>
 
 <!DOCTYPE html>
@@ -155,8 +163,11 @@ if (in_array($role, ['coordinator', 'executive', 'senior_executive'])) {
         <!-- Assigned Tasks (Staff Only) -->
         <?php if ($my_tasks): ?>
             <section class="card shadow-sm" aria-labelledby="tasks-heading">
-                <div class="card-header bg-white">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
                     <h4 class="mb-0" id="tasks-heading">My Assigned Tasks</h4>
+                    <?php if ($role == 'admin'): ?>
+                        <a class="btn btn-sm btn-outline-primary" href="#admin-tasks">View All Assigned Tasks</a>
+                    <?php endif; ?>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -205,6 +216,45 @@ if (in_array($role, ['coordinator', 'executive', 'senior_executive'])) {
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </section>
+        <?php endif; ?>
+
+        <!-- All Assigned Tasks (Admin Only) -->
+        <?php if ($role == 'admin' && $all_tasks): ?>
+            <section id="admin-tasks" class="card shadow-sm mt-4" aria-labelledby="admin-tasks-heading">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0" id="admin-tasks-heading">All Assigned Tasks</h4>
+                </div>
+                <div class="card-body">
+                    <?php if ($all_tasks->num_rows > 0): ?>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Task</th>
+                                        <th>Event</th>
+                                        <th>Assigned To</th>
+                                        <th>Deadline</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php while ($t = $all_tasks->fetch_assoc()): ?>
+                                        <tr>
+                                            <td><?php echo htmlspecialchars($t['description']); ?></td>
+                                            <td><?php echo htmlspecialchars($t['event_title']); ?></td>
+                                            <td><?php echo $t['assigned_user'] ? htmlspecialchars($t['assigned_user']) : '<em>Unassigned</em>'; ?></td>
+                                            <td><?php echo $t['deadline'] ? date('M d, Y', strtotime($t['deadline'])) : '-'; ?></td>
+                                            <td><?php echo ucfirst($t['status']); ?></td>
+                                        </tr>
+                                    <?php endwhile; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php else: ?>
+                        <p class="text-muted mb-0">No tasks assigned yet.</p>
+                    <?php endif; ?>
                 </div>
             </section>
         <?php endif; ?>
