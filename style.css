@@ -1,32 +1,71 @@
 body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+}
+/* Custom eManager Logo */
+.logo-container {
+  font-size: 1.5rem; /* Adjust size as needed */
+  font-weight: 800; /* Extra bold for that tech feel */
+  letter-spacing: -1px;
+  text-transform: none;
 }
 
+.logo-e {
+  color: #ea0d0d; /* Vibrant, "Juicy" Red */
+  /* This adds a subtle glow to the red letter */
+  text-shadow: 0 0 10px rgba(255, 49, 49, 0.4);
+}
+
+.logo-manager {
+  color: #c3c6e4; /* Clean White */
+  transition: 0.3s ease;
+}
+
+/* Hover effect for a little extra "juice" */
+.logo-container:hover .logo-manager {
+  color: #f8f9fa;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+/* Updated Hero Section Text */
+.hero-title {
+  font-weight: 900;
+  font-size: 3.5rem;
+  letter-spacing: -2px;
+  color: #212529; /* Deep dark for contrast */
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: #4b5563; /* Sleek slate grey */
+  line-height: 1.6;
+}
 .navbar-brand {
-    font-weight: 700;
-    letter-spacing: -0.5px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: #c3c6e4;
 }
 
 .card {
-    border: none;
-    border-radius: 12px;
+  border: none;
+  border-radius: 12px;
 }
 
 .btn {
-    border-radius: 6px;
-    font-weight: 500;
+  border-radius: 6px;
+  font-weight: 500;
 }
 
-.form-control, .form-select {
-    border-radius: 6px;
-    padding: 0.6rem 1rem;
+.form-control,
+.form-select {
+  border-radius: 6px;
+  padding: 0.6rem 1rem;
 }
 
 .hero-section {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
 .badge {
-    font-weight: 500;
-    padding: 0.5em 0.8em;
+  font-weight: 500;
+  padding: 0.5em 0.8em;
 }

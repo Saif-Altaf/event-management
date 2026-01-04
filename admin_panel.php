@@ -1,16 +1,12 @@
 <?php
 session_start();
-
 // Admin Check
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     header("Location: index.php");
     exit();
 }
-
 $conn = new mysqli('localhost', 'root', '', 'event_management');
-
 // --- ACTIONS ---
-
 // Create Event
 if (isset($_POST['create_event'])) {
     $title = $_POST['title'];
@@ -21,12 +17,10 @@ if (isset($_POST['create_event'])) {
     $status = $_POST['status'];
     $sensitive = isset($_POST['is_sensitive']) ? 1 : 0;
     $creator = $_SESSION['user_id'];
-
     $sql = "INSERT INTO events (title, description, start_date, end_date, location, status, is_sensitive, created_by) 
             VALUES ('$title', '$desc', '$start', '$end', '$loc', '$status', $sensitive, $creator)";
     $conn->query($sql);
 }
-
 // Update Event
 if (isset($_POST['update_event'])) {
     $id = $_POST['event_id'];
@@ -37,11 +31,9 @@ if (isset($_POST['update_event'])) {
     $loc = $_POST['location'];
     $status = $_POST['status'];
     $sensitive = isset($_POST['is_sensitive']) ? 1 : 0;
-
     $sql = "UPDATE events SET title='$title', description='$desc', start_date='$start', end_date='$end', location='$loc', status='$status', is_sensitive=$sensitive WHERE id=$id";
     $conn->query($sql);
 }
-
 // Delete Event
 if (isset($_GET['delete_event'])) {
     $id = $_GET['delete_event'];
@@ -49,33 +41,40 @@ if (isset($_GET['delete_event'])) {
     header("Location: admin_panel.php");
     exit();
 }
-
 // Assign Task
 if (isset($_POST['assign_task'])) {
     $event_id = $_POST['event_id'];
     $staff_id = $_POST['assigned_to'];
     $desc = $_POST['description'];
     $deadline = $_POST['deadline'];
-
     $conn->query("INSERT INTO tasks (event_id, assigned_to, description, deadline) VALUES ($event_id, $staff_id, '$desc', '$deadline')");
 }
+// Update Registration Status (Approve/Reject) - accept POST for actions
+if ((isset($_POST['reg_action']) && isset($_POST['reg_id'])) || (isset($_GET['reg_action']) && isset($_GET['reg_id']))) {
+    // Prefer POST for state changes
+    $status = isset($_POST['reg_action']) ? $_POST['reg_action'] : $_GET['reg_action']; // 'approved' or 'rejected'
+    $id = (int)(isset($_POST['reg_id']) ? $_POST['reg_id'] : $_GET['reg_id']);
 
-// Update Registration Status (Approve/Reject)
-if (isset($_GET['reg_action']) && isset($_GET['reg_id'])) {
-    $status = $_GET['reg_action']; // 'approved' or 'rejected'
-    $id = $_GET['reg_id'];
-    $conn->query("UPDATE registrations SET status = '$status' WHERE id = $id");
-    header("Location: admin_panel.php");
-    exit();
+    // Basic validation
+    $allowed = ['approved', 'rejected'];
+    if (!in_array($status, $allowed)) {
+        die('Invalid action');
+    }
+
+    // Perform update
+    if ($conn->query("UPDATE registrations SET status = '" . $conn->real_escape_string($status) . "' WHERE id = $id") === TRUE) {
+        header("Location: admin_panel.php");
+        exit();
+    } else {
+        die("Error updating record: " . $conn->error);
+    }
 }
-
 // Update User Role
 if (isset($_POST['update_role'])) {
     $uid = $_POST['user_id'];
     $new_role = $_POST['role'];
     $conn->query("UPDATE users SET role = '$new_role' WHERE id = $uid");
 }
-
 // --- DATA FETCHING ---
 $users = $conn->query("SELECT * FROM users ORDER BY created_at DESC");
 $events = $conn->query("SELECT * FROM events ORDER BY start_date DESC");
@@ -88,19 +87,15 @@ $pending_registrations = $conn->query("
     WHERE r.status = 'pending'
 ");
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <title>Admin Panel - Evenoz</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
 </head>
-
 <body class="bg-light">
-
     <nav class="navbar navbar-dark bg-primary mb-4">
         <div class="container">
             <a class="navbar-brand" href="index.php">Evenoz Admin</a>
@@ -110,9 +105,7 @@ $pending_registrations = $conn->query("
             </div>
         </div>
     </nav>
-
     <main class="container">
-
         <!-- KPIs -->
         <section class="row mb-4" aria-label="Key Performance Indicators">
             <div class="col-md-3">
@@ -140,7 +133,6 @@ $pending_registrations = $conn->query("
                 </div>
             </div>
         </section>
-
         <!-- PENDING APPROVALS -->
         <?php if ($pending_registrations->num_rows > 0): ?>
             <section class="card shadow-sm mb-4 border-warning" aria-labelledby="approvals-heading">
@@ -162,10 +154,16 @@ $pending_registrations = $conn->query("
                                     <td><?php echo $req['username']; ?></td>
                                     <td><?php echo $req['title']; ?></td>
                                     <td>
-                                        <a href="admin_panel.php?reg_id=<?php echo $req['id']; ?>&reg_action=approved"
-                                            class="btn btn-sm btn-success">Approve</a>
-                                        <a href="admin_panel.php?reg_id=<?php echo $req['id']; ?>&reg_action=rejected"
-                                            class="btn btn-sm btn-danger">Reject</a>
+                                        <form method="POST" style="display:inline; margin-right:6px;">
+                                            <input type="hidden" name="reg_id" value="<?php echo $req['id']; ?>">
+                                            <input type="hidden" name="reg_action" value="approved">
+                                            <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                                        </form>
+                                        <form method="POST" style="display:inline;">
+                                            <input type="hidden" name="reg_id" value="<?php echo $req['id']; ?>">
+                                            <input type="hidden" name="reg_action" value="rejected">
+                                            <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                                        </form>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>
@@ -174,9 +172,7 @@ $pending_registrations = $conn->query("
                 </div>
             </section>
         <?php endif; ?>
-
         <div class="row">
-
             <!-- EVENT MANAGEMENT -->
             <div class="col-lg-8">
                 <section class="card shadow-sm mb-4" aria-labelledby="events-heading">
@@ -214,7 +210,6 @@ $pending_registrations = $conn->query("
                                             <a href="admin_panel.php?delete_event=<?php echo $evt['id']; ?>"
                                                 class="btn btn-sm btn-outline-danger"
                                                 onclick="return confirm('Delete event?');">&times;</a>
-
                                             <!-- Edit Event Modal -->
                                             <div class="modal fade" id="editEvent<?php echo $evt['id']; ?>" tabindex="-1">
                                                 <div class="modal-dialog">
@@ -284,7 +279,6 @@ $pending_registrations = $conn->query("
                                                     </div>
                                                 </div>
                                             </div>
-
                                             <!-- Assign Task Modal (Nested per row for simplicity) -->
                                             <div class="modal fade" id="assignTask<?php echo $evt['id']; ?>" tabindex="-1">
                                                 <div class="modal-dialog">
@@ -324,7 +318,6 @@ $pending_registrations = $conn->query("
                                                     </div>
                                                 </div>
                                             </div>
-
                                         </td>
                                     </tr>
                                 <?php endwhile; ?>
@@ -333,7 +326,6 @@ $pending_registrations = $conn->query("
                     </div>
                 </section>
             </div>
-
             <!-- USER MANAGEMENT -->
             <div class="col-lg-4">
                 <section class="card shadow-sm mb-4" aria-labelledby="users-heading">
@@ -375,10 +367,8 @@ $pending_registrations = $conn->query("
                     </div>
                 </section>
             </div>
-
         </div>
     </main>
-
     <!-- Create Event Modal -->
     <div class="modal fade" id="createEvent" tabindex="-1">
         <div class="modal-dialog">
@@ -429,8 +419,6 @@ $pending_registrations = $conn->query("
             </div>
         </div>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
