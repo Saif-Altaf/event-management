@@ -86,6 +86,7 @@ $pending_registrations = $conn->query("
     JOIN events e ON r.event_id = e.id 
     WHERE r.status = 'pending'
 ");
+// ...existing data fetching...
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -176,6 +177,8 @@ $pending_registrations = $conn->query("
                 </div>
             </section>
         <?php endif; ?>
+
+            <!-- ...assigned tasks moved to dashboard.php as requested... -->
         <div class="row">
             <!-- EVENT MANAGEMENT -->
             <div class="col-lg-8">
