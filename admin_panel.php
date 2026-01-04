@@ -91,16 +91,20 @@ $pending_registrations = $conn->query("
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Panel - Evenoz</title>
+    <title>Admin Panel</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
 </head>
 <body class="bg-light">
     <nav class="navbar navbar-dark bg-primary mb-4">
         <div class="container">
-            <a class="navbar-brand" href="index.php">Evenoz Admin</a>
+            <a class="navbar-brand logo-container" href="index.php">
+                <span class="logo-manager">Manage</span>
+                <span class="logo-e">IT</span>
+                <span class="logo-manager"> Admin</span>
+            </a>
             <div class="d-flex gap-3">
-                <a href="dashboard.php" class="btn btn-outline-light btn-sm">My Dashboard</a>
+                <a href="dashboard.php" class="btn btn-outline-light btn-sm">Dashboard</a>
                 <a href="index.php?logout=true" class="btn btn-outline-light btn-sm">Logout</a>
             </div>
         </div>
