@@ -1,7 +1,9 @@
 <?php
+// Start or resume the session so $_SESSION is available for login state (user_id, username, role)
+session_start();
 session_start();
 
-// Database Connection
+// Database Connection (MySQLi) - credentials for local demo
 $host = 'localhost';
 $user = 'root';
 $pass = '';
@@ -13,6 +15,7 @@ if ($conn->connect_error) {
 }
 
 // Handle Login
+// - Validates credentials and stores user information in $_SESSION on success
 $login_error = '';
 if (isset($_POST['login'])) {
     $email = $_POST['email'];
@@ -40,6 +43,7 @@ if (isset($_POST['login'])) {
 }
 
 // Handle Registration
+// - Registers a new user (simple demo flow, plain-text passwords for assignment demo only)
 $register_success = '';
 $register_error = '';
 if (isset($_POST['register'])) {
@@ -68,8 +72,10 @@ if (isset($_GET['logout'])) {
     exit();
 }
 
-// Fetch Public Events (include approved registrations count)
 // Support optional search via GET param `q` (searches title, description, location)
+// Fetch Public Events (include approved registrations count)
+// - Supports optional search via GET param `q` (server-side LIKE on title/description/location)
+// - Adds `approved_count` per event using a scalar subquery (counts registrations with status='approved')
 $search = '';
 $where = "e.status = 'open'";
 if (isset($_GET['q']) && strlen(trim($_GET['q'])) > 0) {
