@@ -162,7 +162,7 @@ $events = $conn->query($sql);
                 <form method="GET" action="index.php" class="d-flex">
                     <input type="search" name="q" class="form-control" placeholder="Search events by title, description or location"
                         value="<?php echo htmlspecialchars($search ?? '', ENT_QUOTES); ?>">
-                    <button type="submit" class="btn btn-primary ms-2">Search</button>
+                    <button type="submit" class="btn btn-dark ms-2">Search</button>
                 </form>
             </div>
         </div>
