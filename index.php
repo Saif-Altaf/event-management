@@ -74,6 +74,7 @@ if (isset($_GET['logout'])) {
 
 // ======================================= F 4 =======================================
 // browsing/searching events
+// Feature: Event Discovery & Booking System
 $search = '';
 $where = "e.status = 'open'";
 if (isset($_GET['q']) && strlen(trim($_GET['q'])) > 0) {
@@ -182,18 +183,22 @@ $events = $conn->query($sql);
                             <div class="card-footer bg-white border-top-0">
                                 <div class="d-flex align-items-center">
                                     <?php if (isset($_SESSION['user_id'])): ?>
-                                        <a href="dashboard.php?register_event=<?php echo $row['id']; ?>"
-                                            class="btn btn-outline-primary btn-sm flex-grow-1 me-2"
-                                            onclick="return confirm('Register for this event?');">View Details &amp; Register</a>
+                                            <?php // Prantik: Register link — part of Event Discovery & Booking System (triggers dashboard.php?register_event)
+                                            ?>
+                                            <a href="dashboard.php?register_event=<?php echo $row['id']; ?>"
+                                                class="btn btn-outline-primary btn-sm flex-grow-1 me-2"
+                                                onclick="return confirm('Register for this event?');">View Details &amp; Register</a>
                                     <?php else: ?>
                                         <a href="#login-modal" data-bs-toggle="modal" class="btn btn-outline-dark btn-sm flex-grow-1 me-2">Login to
                                             Register</a>
                                     <?php endif; ?>
-                                    <div class="text-muted small d-flex align-items-center" title="<?php echo $row['approved_count']; ?> registered">
+                                        <div class="text-muted small d-flex align-items-center" title="<?php echo $row['approved_count']; ?> registered">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" style="margin-right:6px;">
                                             <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3z"/>
                                             <path fill-rule="evenodd" d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
                                         </svg>
+                                        <?php // Prantik: approved_count shown here — Participation & Registration Tracking (counts approved participants per event)
+                                        ?>
                                         <span class="event-count"><?php echo (int)$row['approved_count']; ?></span>
                                     </div>
                                 </div>

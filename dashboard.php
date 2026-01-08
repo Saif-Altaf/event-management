@@ -33,6 +33,10 @@ if (isset($_GET['cancel_event'])) {
 }
 
 // Register for an Event (from Index or here)
+// ============================= Prantik ========================================
+// Feature: Event Discovery & Booking System (booking/registration handler)
+// Prantik — booking logic exists here (dashboard.php)
+// registration status 'pending' for sensitive events, otherwise 'approved'.
 if (isset($_GET['register_event'])) {
     $event_id = $_GET['register_event'];
 
@@ -111,7 +115,11 @@ if ($role == 'admin') {
 
     <main class="container my-5">
 
-        <!-- My Registrations -->
+       <!-- My Registrations -->
+       <!-- Feature: Participation & Registration Tracking
+           Implemented here: this section displays which events the current user has registered for.
+           Prantik
+       -->
         <section class="card shadow-sm mb-5" aria-labelledby="registrations-heading">
             <div class="card-header bg-white">
                 <h4 class="mb-0" id="registrations-heading">My Event Registrations</h4>

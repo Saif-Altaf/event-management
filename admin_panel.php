@@ -50,7 +50,12 @@ if (isset($_POST['assign_task'])) {
     $conn->query("INSERT INTO tasks (event_id, assigned_to, description, deadline) VALUES ($event_id, $staff_id, '$desc', '$deadline')");
 }
 // Update Registration Status (Approve/Reject) - accept POST for actions
-if ((isset($_POST['reg_action']) && isset($_POST['reg_id'])) || (isset($_GET['reg_action']) && isset($_GET['reg_id']))) {
+// ============================= Prantik ========================================
+// Feature: Participation & Registration Tracking (admin approval flow)
+// Implemented here by admin_panel.php — admin can approve/reject pending registrations.
+// Prantik
+// This affects the registrations table and participant counts shown on event cards.
+if ((isset($_POST['reg_action']) && isset($_POST['reg_id'])) || (isset($_GET['reg_action']) && isset($_GET['reg_id']))) { // using both for flexibility
     // Prefer POST for state changes
     $status = isset($_POST['reg_action']) ? $_POST['reg_action'] : $_GET['reg_action']; // 'approved' or 'rejected'
     $id = (int)(isset($_POST['reg_id']) ? $_POST['reg_id'] : $_GET['reg_id']);
