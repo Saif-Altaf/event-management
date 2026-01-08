@@ -49,10 +49,10 @@ if (isset($_POST['assign_task'])) {
     $deadline = $_POST['deadline'];
     $conn->query("INSERT INTO tasks (event_id, assigned_to, description, deadline) VALUES ($event_id, $staff_id, '$desc', '$deadline')");
 }
-// Update Registration Status (Approve/Reject) - accept POST for actions
-if ((isset($_POST['reg_action']) && isset($_POST['reg_id'])) || (isset($_GET['reg_action']) && isset($_GET['reg_id']))) {
+// Update Registration Status (Approve/Reject)
+if ((isset($_POST['reg_action']) && isset($_POST['reg_id'])) || (isset($_GET['reg_action']) && isset($_GET['reg_id']))) { 
     // Prefer POST for state changes
-    $status = isset($_POST['reg_action']) ? $_POST['reg_action'] : $_GET['reg_action']; // 'approved' or 'rejected'
+    $status = isset($_POST['reg_action']) ? $_POST['reg_action'] : $_GET['reg_action']; 
     $id = (int)(isset($_POST['reg_id']) ? $_POST['reg_id'] : $_GET['reg_id']);
 
     // Basic validation
@@ -86,7 +86,7 @@ $pending_registrations = $conn->query("
     JOIN events e ON r.event_id = e.id 
     WHERE r.status = 'pending'
 ");
-// ...existing data fetching...
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -97,7 +97,7 @@ $pending_registrations = $conn->query("
     <link href="style.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-    <nav class="navbar navbar-dark bg-primary mb-4">
+    <nav class="navbar navbar-dark bg-dark mb-4">
         <div class="container">
             <a class="navbar-brand logo-container" href="index.php">
                 <span class="logo-manager">Manage</span>
@@ -178,7 +178,6 @@ $pending_registrations = $conn->query("
             </section>
         <?php endif; ?>
 
-            <!-- ...assigned tasks moved to dashboard.php as requested... -->
         <div class="row">
             <!-- EVENT MANAGEMENT -->
             <div class="col-lg-8">
