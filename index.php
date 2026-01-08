@@ -23,7 +23,7 @@ if (isset($_POST['login'])) {
 
     // Direct SQL as requested (No Prepared Statements)
     $sql = "SELECT * FROM users WHERE email = '$email' AND password = '$password'";
-    $result = $conn->query($sql);
+    $result = $conn->query($sql);  // sends SQL query ($sql in text format) to the database
 
     if ($result->num_rows > 0) {
         $user = $result->fetch_assoc();
