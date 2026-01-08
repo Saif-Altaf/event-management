@@ -120,6 +120,7 @@ $events = $conn->query($sql);
 <body>
 
     <!-- Navigation -->
+    <!-- what the user (whoever is using the website) is gonna see -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand logo-container" href="index.php">
@@ -152,7 +153,7 @@ $events = $conn->query($sql);
     <section class="hero-section">
         <div class="container">
             <h1 class="display-4 fw-bold">Manage Events with Ease</h1>
-            <p class="lead text-muted">Streamline event planning, task assignments, and team collaboration.</p>
+            <p class="lead text-muted">ManageIT - A centralized platform for event creation, scheduling, registration management, and real-time event tracking.</p>
             <?php if (!isset($_SESSION['user_id'])): ?>
                 <a href="#register-modal" data-bs-toggle="modal" class="btn btn-dark btn-lg mt-3">Get Started</a>
             <?php endif; ?>
