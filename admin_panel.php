@@ -102,7 +102,7 @@ $pending_registrations = $conn->query("
     <link href="style.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-    <nav class="navbar navbar-dark bg-primary mb-4">
+    <nav class="navbar navbar-dark bg-dark mb-4">
         <div class="container">
             <a class="navbar-brand logo-container" href="index.php">
                 <span class="logo-manager">Manage</span>
