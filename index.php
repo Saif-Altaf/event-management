@@ -1,45 +1,47 @@
 <?php
 session_start();
+session_start();
 
-// Database Connection
+// Database Connection (MySQLi) - credentials for local demo
 $host = 'localhost';
 $user = 'root';
 $pass = '';
 $db = 'event_management';
 
-$conn = new mysqli($host, $user, $pass, $db);
+$conn = new mysqli($host, $user, $pass, $db); 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
 // Handle Login
+// - Validates credentials and stores user information in $_SESSION on success
 $login_error = '';
 if (isset($_POST['login'])) {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    // Direct SQL as requested (No Prepared Statements)
     $sql = "SELECT * FROM users WHERE email = '$email' AND password = '$password'";
-    $result = $conn->query($sql);
+    $result = $conn->query($sql);  
 
-    if ($result->num_rows > 0) {
-        $user = $result->fetch_assoc();
+    if ($result->num_rows > 0) { 
+        $user = $result->fetch_assoc(); 
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['role'] = $user['role'];
 
         if ($user['role'] == 'admin') {
-            header("Location: admin_panel.php");
+            header("Location: admin_panel.php"); 
         } else {
             header("Location: dashboard.php");
         }
-        exit();
+        exit(); 
     } else {
         $login_error = "Invalid email or password.";
     }
 }
 
 // Handle Registration
+// - Registers a new user (simple demo flow, plain-text passwords for assignment demo only)
 $register_success = '';
 $register_error = '';
 if (isset($_POST['register'])) {
@@ -68,15 +70,16 @@ if (isset($_GET['logout'])) {
     exit();
 }
 
-// Fetch Public Events (include approved registrations count)
-// Support optional search via GET param `q` (searches title, description, location)
+
+// browsing/searching events
 $search = '';
 $where = "e.status = 'open'";
 if (isset($_GET['q']) && strlen(trim($_GET['q'])) > 0) {
-    $search = trim($_GET['q']);
+    $search = trim($_GET['q']);  
     $esc = $conn->real_escape_string($search);
-    $where .= " AND (e.title LIKE '%" . $esc . "%' OR e.description LIKE '%" . $esc . "%' OR e.location LIKE '%" . $esc . "%')";
+    $where .= " AND (e.title LIKE '%" . $esc . "%' OR e.description LIKE '%" . $esc . "%' OR e.location LIKE '%" . $esc . "%')"; 
 }
+// participation count subquery
 $sql = "SELECT e.*, (
          SELECT COUNT(*) FROM registrations r WHERE r.event_id = e.id AND r.status = 'approved'
       ) as approved_count
@@ -99,14 +102,6 @@ $events = $conn->query($sql);
             background-color: #f8f9fa;
             padding: 80px 0;
             text-align: center;
-        }
-
-        .event-card {
-            transition: transform 0.2s;
-        }
-
-        .event-card:hover {
-            transform: translateY(-5px);
         }
     </style>
 </head>
@@ -146,7 +141,7 @@ $events = $conn->query($sql);
     <section class="hero-section">
         <div class="container">
             <h1 class="display-4 fw-bold">Manage Events with Ease</h1>
-            <p class="lead text-muted">Streamline event planning, task assignments, and team collaboration.</p>
+            <p class="lead text-muted">ManageIT - A centralized platform for event creation, scheduling, registration management, and real-time event tracking.</p>
             <?php if (!isset($_SESSION['user_id'])): ?>
                 <a href="#register-modal" data-bs-toggle="modal" class="btn btn-dark btn-lg mt-3">Get Started</a>
             <?php endif; ?>
@@ -161,7 +156,7 @@ $events = $conn->query($sql);
                 <form method="GET" action="index.php" class="d-flex">
                     <input type="search" name="q" class="form-control" placeholder="Search events by title, description or location"
                         value="<?php echo htmlspecialchars($search ?? '', ENT_QUOTES); ?>">
-                    <button type="submit" class="btn btn-primary ms-2">Search</button>
+                    <button type="submit" class="btn btn-dark ms-2">Search</button>
                 </form>
             </div>
         </div>
@@ -182,19 +177,23 @@ $events = $conn->query($sql);
                             <div class="card-footer bg-white border-top-0">
                                 <div class="d-flex align-items-center">
                                     <?php if (isset($_SESSION['user_id'])): ?>
-                                        <a href="dashboard.php?register_event=<?php echo $row['id']; ?>"
-                                            class="btn btn-outline-primary btn-sm flex-grow-1 me-2"
-                                            onclick="return confirm('Register for this event?');">View Details &amp; Register</a>
+                                            <?php 
+                                            ?>
+                                            <a href="dashboard.php?register_event=<?php echo $row['id']; ?>"
+                                                class="btn btn-outline-primary btn-sm flex-grow-1 me-2"
+                                                onclick="return confirm('Register for this event?');">View Details &amp; Register</a>
                                     <?php else: ?>
                                         <a href="#login-modal" data-bs-toggle="modal" class="btn btn-outline-dark btn-sm flex-grow-1 me-2">Login to
                                             Register</a>
                                     <?php endif; ?>
-                                    <div class="text-muted small d-flex align-items-center" title="<?php echo $row['approved_count']; ?> registered">
+                                        <div class="text-muted small d-flex align-items-center" title="<?php echo $row['approved_count']; ?> registered">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" style="margin-right:6px;">
                                             <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3z"/>
                                             <path fill-rule="evenodd" d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
                                         </svg>
-                                        <span><?php echo (int)$row['approved_count']; ?></span>
+                                        <?php 
+                                        ?>
+                                        <span class="event-count"><?php echo (int)$row['approved_count']; ?></span>
                                     </div>
                                 </div>
                             </div>
