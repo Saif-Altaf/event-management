@@ -69,3 +69,27 @@ body {
   font-weight: 500;
   padding: 0.5em 0.8em;
 }
+
+/* Themed event cards (used on homepage) */
+.event-card {
+  background: linear-gradient(180deg, #ffffff 0%, #fbfbff 100%);
+  border: 1px solid rgba(195, 198, 228, 0.15); /* subtle purple border */
+  border-radius: 12px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+.event-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(33, 37, 41, 0.08);
+  border-color: rgba(234, 13, 13, 0.25); /* accent on hover (logo red) */
+}
+.event-card .card-body h5.card-title {
+  color: #15141a; /* strong title color */
+}
+.event-card .card-footer {
+  background: transparent;
+  border-top: none;
+}
+.event-count {
+  color: #6b7280; /* muted count text */
+}
