@@ -1,6 +1,5 @@
 <?php
 session_start();
-session_start();
 
 // Database Connection (MySQLi) - credentials for local demo
 $host = 'localhost';
