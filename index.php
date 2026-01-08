@@ -9,7 +9,7 @@ $user = 'root';
 $pass = '';
 $db = 'event_management';
 
-$conn = new mysqli($host, $user, $pass, $db);
+$conn = new mysqli($host, $user, $pass, $db); // object (conn)
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
@@ -25,18 +25,18 @@ if (isset($_POST['login'])) {
     $sql = "SELECT * FROM users WHERE email = '$email' AND password = '$password'";
     $result = $conn->query($sql);  // sends SQL query ($sql in text format) to the database
 
-    if ($result->num_rows > 0) {
-        $user = $result->fetch_assoc();
+    if ($result->num_rows > 0) { // checks if any matching user found
+        $user = $result->fetch_assoc(); // fetches user data as associative array
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['role'] = $user['role'];
 
         if ($user['role'] == 'admin') {
-            header("Location: admin_panel.php");
+            header("Location: admin_panel.php"); // header redirects the user to preferred location i.e. admin panel
         } else {
             header("Location: dashboard.php");
         }
-        exit();
+        exit(); // Ensure no further code is executed after redirect
     } else {
         $login_error = "Invalid email or password.";
     }
@@ -72,23 +72,23 @@ if (isset($_GET['logout'])) {
     exit();
 }
 
-// Support optional search via GET param `q` (searches title, description, location)
-// Fetch Public Events (include approved registrations count)
-// - Supports optional search via GET param `q` (server-side LIKE on title/description/location)
-// - Adds `approved_count` per event using a scalar subquery (counts registrations with status='approved')
+// ======================================= F 4 =======================================
+// browsing/searching events
 $search = '';
 $where = "e.status = 'open'";
 if (isset($_GET['q']) && strlen(trim($_GET['q'])) > 0) {
-    $search = trim($_GET['q']);
+    $search = trim($_GET['q']);  // q is the search query
     $esc = $conn->real_escape_string($search);
-    $where .= " AND (e.title LIKE '%" . $esc . "%' OR e.description LIKE '%" . $esc . "%' OR e.location LIKE '%" . $esc . "%')";
+    $where .= " AND (e.title LIKE '%" . $esc . "%' OR e.description LIKE '%" . $esc . "%' OR e.location LIKE '%" . $esc . "%')"; // here "." concatenates strings in PHP
 }
+// participation count subquery
 $sql = "SELECT e.*, (
          SELECT COUNT(*) FROM registrations r WHERE r.event_id = e.id AND r.status = 'approved'
       ) as approved_count
       FROM events e WHERE " . $where . " ORDER BY e.start_date ASC";
 $events = $conn->query($sql);
 ?>
+ <!-- ======================================= F 4 ======================================= -->
 
 <!DOCTYPE html>
 <html lang="en">
