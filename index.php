@@ -74,7 +74,7 @@ if (isset($_GET['logout'])) {
 
 // ======================================= F 4 =======================================
 // browsing/searching events
-// Feature: Event Discovery & Booking System
+// Feature: Event Discovery & Booking System -- registration 
 $search = '';
 $where = "e.status = 'open'";
 if (isset($_GET['q']) && strlen(trim($_GET['q'])) > 0) {
@@ -107,7 +107,6 @@ $events = $conn->query($sql);
             padding: 80px 0;
             text-align: center;
         }
-        /* .event-card styles moved to style.css so theme changes apply consistently */
     </style>
 </head>
 
