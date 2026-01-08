@@ -1,7 +1,6 @@
 <?php
 // Start or resume the session so $_SESSION is available for login state (user_id, username, role)
 session_start();
-session_start();
 
 // Database Connection (MySQLi) - credentials for local demo
 $host = 'localhost';
