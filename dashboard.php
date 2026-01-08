@@ -111,7 +111,7 @@ if ($role == 'admin') {
 
     <main class="container my-5">
 
-        <!-- My Registrations -->
+       <!-- My Registrations -->
         <section class="card shadow-sm mb-5" aria-labelledby="registrations-heading">
             <div class="card-header bg-white">
                 <h4 class="mb-0" id="registrations-heading">My Event Registrations</h4>
