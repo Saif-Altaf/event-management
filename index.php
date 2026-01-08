@@ -106,14 +106,7 @@ $events = $conn->query($sql);
             padding: 80px 0;
             text-align: center;
         }
-
-        .event-card {
-            transition: transform 0.2s;
-        }
-
-        .event-card:hover {
-            transform: translateY(-5px);
-        }
+        /* .event-card styles moved to style.css so theme changes apply consistently */
     </style>
 </head>
 
@@ -201,7 +194,7 @@ $events = $conn->query($sql);
                                             <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3z"/>
                                             <path fill-rule="evenodd" d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
                                         </svg>
-                                        <span><?php echo (int)$row['approved_count']; ?></span>
+                                        <span class="event-count"><?php echo (int)$row['approved_count']; ?></span>
                                     </div>
                                 </div>
                             </div>
