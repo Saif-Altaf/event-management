@@ -68,3 +68,7 @@ This guide attempts to help you set up and verify the newly created Event Manage
 ## 3. Troubleshooting
 - **Database Connection Error**: Check your MySQL credentials in the top PHP block of every file.
 - **Permission Denied**: Ensure `session_start()` is working (cookies enabled).
+
+## 🤝 Contributors
+[@Hibrul-Anam-Prantik](https://github.com/Hibrul-Anam-Prantik)
+
